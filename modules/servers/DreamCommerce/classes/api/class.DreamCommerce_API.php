@@ -21,101 +21,118 @@
 /**
  * @author Pawel Kopec <pawelk@modulesgarden.com>
  */
-class DreamCommerce_API  extends Mg_CurlApi{
+class DreamCommerce_API  extends MG_CurlApi{
 
       protected $url;
       protected $debug;
-      protected $userId = 0;
-      protected $apiKey = '';
-      private static $categories = array(
-          'colocation',
-          'dedicatedserver',
-          'gameserver',
-          'voiceserver',
-          'logging'
-      );
-      const colocation='colocation';
-      const dedicatedserver = 'dedicatedserver';
-      const gameserver = 'gameserver';
-      const voiceserver = 'voiceserver';
+      protected  $login;
+      protected  $password;
       
-      private static $jsonRequest = true;
+      private $session;
 
-      public function __construct() {
+      public function __construct($url, $login, $password, $debug) {
+           $this->isJson = true;
+           $this->url =  $url;
+           $this->debug = (boolean) $debug;
+           $this->login = $login; 
+           $this->password = $password;
+           parent::__construct($this->url, $this->login, $this->password, "DreamCommerce", $this->debug);
+      }      
 
-      }
-      /**
-       * 
-       */
-      public function setWHMCSConnection(array $params){
-
-            $host = $params['serverip'] ? $params['serverip'] : $params['serverhostname'];
-            if ($host == null)
-                  $host = 'http://internalbeta.i3d.net/api/rest/';
-            $this->url =  $host;
-            $this->userId = $params['serverusername'];
-            $this->apiKey = $params['serverpassword'];
-            $this->debug = (boolean) $params['debug_mode'];
-            parent::__construct($this->url, $this->userId, $this->apiKey, "i3D", $this->debug);
-      }
-
-      /**
-       * 
-       * @param type $category
-       * @param type $action
-       * @param array $option
-       * @return type
-       * @throws Exception
-       */
-      public function doRequest($category, $action, array $option = null) {
-            // Validate some vars
-            if ($this->userId < 1 || strlen($this->apiKey) != 20)
-                  throw new Exception("Invalid parameters");
-
-            if (!in_array($category, self::$categories))
-                  throw new Exception("Invalid category");
-
-            // Create POST data
-            $data = array(
-                'userId' => $this->userId,
-                'apiKey' => $this->apiKey,
-                'action' => $action
-            );
-            
-            if ($option) {
-                  $data = array_merge($data, $option);
+      private function processRequest($res){
+            if(isset($res->error)&& $res->error){
+                  throw new DreamCommerce_Exception((string) $res->error , (int)$res->code);
             }
-            self::$jsonRequest ?     $request = json_encode($data): $request = http_build_query($data);
-            $headers = array('Content-type: application/json',  //x-www-form-urlencoded
-                                         "Content-Length: ".strlen($request));
-            
-            $url = $this->url . $category;
-            $response = $this->call( $request, $headers, $url);
-            if($response)
-                  return $this->processRequest($response);
-      }
-      
-      public function testConnection(){
-//            $result = $this->doRequest(I3D_API::dedicatedserver, 'getAll');
-//            if($result->status !="Success")
-//                  throw new Exception ($result->msg);
-//            return true;
-      }
-      
-      private function processRequest($response){
-            $res = json_decode($response);
-            if(!$res && strpos($response, 'ERROR')!== false)
-                    throw new Exception((string) $response);
-            if($res->status !="Success" &&  $res->msg)
-                  throw new Exception((string) $res->msg);
-            
-            if($res->data->result && strtolower($res->data->result)=="error")
-                  throw new Exception((string) $res->data->message);
-            
-            if($res->data->updates[0]->result &&  strtolower($res->data->updates[0]->result)=="error")
-                  throw new Exception((string) $res->data->updates[0]->msg);
             return $res;
       }
       
-
+      /**
+       * Get Session identifier
+       * @return string
+       */
+      public function getSession(){ return $this->session;}
+      
+      /**
+       * Creates license
+       * 
+       * @param string $session session identifier
+       * @param string $email user email address
+       * @param string $host shop address, e.g. "store001.partnerdomain.com"
+       * @param int $type license type (0 - trial, 1 - full version)
+       * @param string $package package name
+       * @param int $period period (months)
+       * @param string $version shop version, if empty latest version will be used
+       * @param string $info additional notes
+       */
+      public function createLicense($session=null, $email, $host, $type, $package, $period,$version=null, $info=null){
+            if(!$session) $session= $this->session;
+            $data = array( 
+                           "email" => $email
+                          ,"host"  => $host
+                          ,"type"  => $type
+                          ,"package" => $package
+                          ,"period" => $period
+            );
+            if($version)
+                  $data['version'] = $version;
+            if($info)
+                  $data['info'] = $info;
+            
+      }
+      public function testConnection(){
+            $data = array( 
+                         "method"  => "testConnection"
+                         ,'params' => array()
+                );
+            return $this->processRequest($this->call($data ));
+      }
+      /**
+       * Allows user authentication
+       * 
+       * @param string $login
+       * @param string $password
+       */
+      public function login($login=null, $password=null){
+            if(!$login)
+                  $login = $this->login;
+            if(!$password)
+                  $password = $this->password;
+            
+            $data = array( 
+                         "method"  => "login"
+                         ,'params' => array($login, $password)
+                );
+            $this->session = $this->processRequest($this->call($data));
+      }
+      /**
+       * Returns list of available license packages
+       * 
+       * @param string $session
+       * @return object
+       */
+      public function getPackages($session=null){
+            if(!$session) $session= $this->session;
+            $data = array( 
+                         "method"  => "getPackages"
+                         ,'params' => array($session)
+                );
+            
+            return $this->processRequest($this->call($data));
+      }
+      
+      /**
+       * Returns list of available license periods
+       * 
+       * @param string $session
+       * @return object
+       */
+      public function getPeriods($session=null){
+            if(!$session) $session= $this->session;
+            $data = array( 
+                         "method"  => "getPeriods"
+                         ,'params' => array($session)
+                );
+            
+            return $this->processRequest($this->call($data));
+      }
 }

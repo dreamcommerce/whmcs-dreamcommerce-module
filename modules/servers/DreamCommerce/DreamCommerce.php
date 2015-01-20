@@ -26,13 +26,93 @@ if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'functions.php';
 include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
+//        error_reporting(E_ALL);
+//ini_set('display_errors', '1');
 /**
  * Config options are the module settings defined on a per product basis.
  * 
  * @return array
  */
 function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
-      
+ 
+        $config                 =   array 
+        (
+          'lmsPartner'          =>  array
+        (
+            "FriendlyName" => "LMS Partner",
+            'Type'          =>  'text',
+            'Size'          =>  '25',
+        ),
+        'username'          =>  array
+        (
+           "FriendlyName" => "Username",
+            'Type'          =>  'text',
+            'Size'          =>  '25',
+        ),
+        'password'          =>  array
+        (
+            "FriendlyName" => "Password",
+            'Type'          =>  'password',
+            'Size'          =>  '25'
+        ),
+          'host'          =>  array
+        (
+            "FriendlyName" => "Host",
+            'Type'          =>  'text',
+            'Size'          =>  '45',
+        ),
+          'package'          =>  array(
+            "FriendlyName" => "Package",
+            'Type'          =>  'dropdown',
+            "Options" => "",
+        ),
+          'period'        => array(
+            "FriendlyName" => "Period",
+            'Type'          =>  'dropdown',
+            "Options" => "",
+        ),
+          "debugMode"   =>  array
+        (
+            "FriendlyName" => "Debug Mode",
+            'Type'          =>  'yesno',
+            'Description'   =>  'Logs on "Module Log"'
+        ),
+    );
+            
+    if(basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php' && $loadValuesFromServer ===true){
+            
+            $params = mysql_get_row("SELECT * FROM tblproducts WHERE id =? LIMIT 1", array($_REQUEST['id']));
+            $config = DreamCommerce_ConfigOptions(false);
+            $dcConfig = new DreamCommerce_Config($config, $params);
+            if(!empty($dcConfig->host) && !empty($dcConfig->username) && !empty($dcConfig->password)){
+                  try{
+                        $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
+                        $api->testConnection();
+                        $api->login();
+                        
+                        $temp = array();
+                        foreach($api->getPackages() as $package){
+                            $temp[] = "{$package->id} | {$package->name}";
+                        }
+                        $config['package']['Options'] =implode(",", $temp);
+                        
+                        $temp = array();
+                        foreach($api->getPeriods() as $period){
+                            $temp[] = "{$period->id} | {$period->name}";
+                        }
+                        $config['period']['Options'] =implode(",", $temp);
+                        unset($temp);
+                        
+                  } catch (DreamCommerce_Exception $ex) {
+                        echo '<div class="errorbox"><span class="title">'.$ex->getMessage().'</span></div>';
+                  } catch (Exception $ex){
+                        echo "<div class=\"errorbox\"><span class=\"title\">ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}</span></div>";
+                  }
+            }else{
+                  unset($config['package'], $config['period']);
+            }
+      }
+    return $config;
 }
 
 /**
@@ -42,12 +122,26 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
  * @return string
  */
 function DreamCommerce_CreateAccount($params) {
-      
+      try{
+            $config = DreamCommerce_ConfigOptions(false);
+            $dcConfig = new DreamCommerce_Config($config, $params);
+            $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
+            $api->testConnection();
+            $api->login();
+            
+                        
+      }
+      catch (DreamCommerce_Exception $ex) {
+            return $ex->getMessage();
+      }
+      catch (Exception $ex) {
+            return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
+      }
 }
 
 /**
- * FUNCTION proxmoxVPS_ChangePackage
  * This function is used for upgrading and downgrading of products.
+ * 
  * @param array $params
  * @return string
  */
@@ -56,6 +150,7 @@ function DreamCommerce_ChangePackage($params) {
 }
 /**
  * Change Password
+ * 
  * @param array $params
  * @return string
  */
