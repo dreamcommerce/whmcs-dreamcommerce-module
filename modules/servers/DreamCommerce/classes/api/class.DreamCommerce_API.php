@@ -78,6 +78,12 @@ class DreamCommerce_API  extends MG_CurlApi{
             if($info)
                   $data['info'] = $info;
             
+            $data = array( 
+                         "method"  => "createLicense"
+                         ,'params' => array($session, $data)
+                );
+            
+            return $this->processRequest($this->call($data ));
       }
       public function testConnection(){
             $data = array( 

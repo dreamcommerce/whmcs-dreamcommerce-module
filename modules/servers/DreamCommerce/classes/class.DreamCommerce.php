@@ -20,7 +20,9 @@
 /**
  * @author Pawel Kopec <pawelk@modulesgarden.com>
  */
-
+/**
+ * Client Area controller
+ */
 class DreamCommerce extends MG_Clientarea {
      
 

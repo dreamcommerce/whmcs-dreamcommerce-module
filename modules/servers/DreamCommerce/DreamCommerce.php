@@ -26,8 +26,8 @@ if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'functions.php';
 include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
-//        error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+        error_reporting(E_ALL);
+ini_set('display_errors', '1');
 /**
  * Config options are the module settings defined on a per product basis.
  * 
@@ -71,6 +71,39 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
             'Type'          =>  'dropdown',
             "Options" => "",
         ),
+            'hostPrefix'          =>  array
+        (
+           "FriendlyName" => "Store Host Prefix",
+            'Type'          =>  'text',
+            'Size'          =>  '25',
+           'Description'   =>  'Used when domain is not ordered. Eg. store'
+        ),
+            'nextStoreID'          =>  array
+        (
+           "FriendlyName" => "Next Store ID",
+            'Type'          =>  'text',
+            'Size'          =>  '25',
+           'Description'   =>  'Used for hostname. Eg. 1'
+        ),
+         'licenseType'        => array(
+            "FriendlyName" => "License Type",
+            'Type'          =>  'dropdown',
+            "Options" => "Trial,Full",
+        ), 
+            'shopVersion' =>  array
+        (
+           "FriendlyName" => "Shop Version",
+            'Type'          =>  'text',
+            'Size'          =>  '25',
+           'Description'   =>  'If empty latest version will be used'
+        ),
+            "info" =>  array
+        (
+           "FriendlyName" => "Additional Notes",
+            'Type'          =>  'textarea',
+            'Size'          =>  '25',
+           'Description'   =>  ''
+        ),
           "debugMode"   =>  array
         (
             "FriendlyName" => "Debug Mode",
@@ -92,7 +125,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
                         
                         $temp = array();
                         foreach($api->getPackages() as $package){
-                            $temp[] = "{$package->id} | {$package->name}";
+                            $temp[] = "{$package->name}";
                         }
                         $config['package']['Options'] =implode(",", $temp);
                         
@@ -100,7 +133,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
                         foreach($api->getPeriods() as $period){
                             $temp[] = "{$period->id} | {$period->name}";
                         }
-                        $config['period']['Options'] =implode(",", $temp);
+                        $config['period']['Options'] = implode(",", $temp);
                         unset($temp);
                         
                   } catch (DreamCommerce_Exception $ex) {
@@ -122,17 +155,47 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
  * @return string
  */
 function DreamCommerce_CreateAccount($params) {
+      if ($params['customfields']['accountID'])
+		return 'Custom Field /Account/ is not empty';
       try{
             $config = DreamCommerce_ConfigOptions(false);
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
+            $product = new DreamCommerce_Product($params['pid']);
+            $hosting = new DreamCommerce_Hosting($params['serviceid']);
+            if(!isset($params['customfields']['accountID'])){
+                 $product->generateDefaultCustomField(); 
+            }
             $api->testConnection();
             $api->login();
             
-                        
+            $email = $params['clientsdetails']['email'];
+            $dcConfig->nextStoreID = (int) $dcConfig->nextStoreID;
+            $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID;
+            $type  = $dcConfig->licenseType =="Full" ? 1 : 0;
+            $version = $dcConfig->shopVersion;
+            $package = $dcConfig->package;
+            $period  = 0;
+            foreach($api->getPeriods() as $p){
+                  if($dcConfig->getPeriodID() == $p->id){
+                        $period = $p->months;
+                        break;
+                  }
+            }
+            $info = $dcConfig->info;
+            $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
+            $hosting->setCustomField("accountID", (string)$result->account);
+            $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ) ));
+            
+            if(empty($params['domain'] )){
+                  $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
+                  $product->update(array($optionKey => $dcConfig->nextStoreID +=1 ));
+            }
+            
+            return 'success';         
       }
       catch (DreamCommerce_Exception $ex) {
-            return $ex->getMessage();
+            return "ERROR: {$ex->getMessage()} Code: {$ex->getCode()}";
       }
       catch (Exception $ex) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
