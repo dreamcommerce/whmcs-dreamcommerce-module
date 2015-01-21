@@ -26,8 +26,8 @@ if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'functions.php';
 include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
-//        error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+        error_reporting(E_ALL);
+ini_set('display_errors', '1');
 /**
  * Config options are the module settings defined on a per product basis.
  * 
