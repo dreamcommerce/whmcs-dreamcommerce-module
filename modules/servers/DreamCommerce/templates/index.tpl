@@ -36,109 +36,28 @@
                     {/foreach}
               {/if}
 	</div>
-    {if $dedicatedId}
-        <div id="serverstats">
+       {if $accountID}
+        <div>
             <table width="90%" class="table table-striped">
-                <tr><td>{$lang.index.refresh}</td><td><span id="serverstatus" style="display: none;"><img src="images/loadingsml.gif"></span><a href="#" onclick="i3D_Action('details');return false;"><img src="{$assetsUrl}/img/refresh.png" alt="" /></a></td></tr>
-                <tr><td>{$lang.index.server}</td><td class="vps_label">{$details->dediserverName}</td></tr>
-                <tr><td>{$lang.index.status}</td><td id="vm_status">{if $details->status == "ACTIVE"}<span class="green">{$vm->status}</span>{else}<span class="red">{$details->status}</span>{/if}</td></tr>
-                <tr><td>{$lang.index.operating_sys}</td><td class="vps_label">{$details->osName}</td></tr>
-                <tr><td>{$lang.index.project_name}</td><td class="vps_label">{if $details->projectName} {$details->projectName} {else} - {/if}</td></tr>
-                <tr><td>{$lang.index.server_name}</td><td class="vps_label">{if $details->clientServerName} {$details->clientServerName}{else} - {/if}</td></tr>
-                <tr><td>{$lang.index.brand}</td><td class="vps_label">{$details->serverCase}</td></tr>
+                <tr><td>{$lang.index.host}:</td><td>{$info->host}</td></tr>
+                <tr><td>{$lang.index.customer_name}:</td><td>{$info->customer_name}</td></tr>
+                <tr><td>{$lang.index.email}:</td><td> {if !$info->email} - {else} {$info->email} {/if}</td></tr>
+                <tr><td>{$lang.index.date_start}:</td><td>{$info->date_start}</td></tr>
+                <tr><td>{$lang.index.date_end}:</td><td>{$info->date_end}</td></tr>
+                <tr><td>{$lang.index.type_header}:</td><td>{if $info->type eq 1} {$lang.index.type.1}{else} {$lang.index.type.0}{/if}</td></tr>
+                <tr><td>{$lang.index.limits.products}:</td><td>{$info->limits->products}</td></tr>
+                <tr><td>{$lang.index.limits.admins}:</td><td>{$info->limits->admins}</td></tr>
+                <tr><td>{$lang.index.limits.disable_facebook}:</td><td>{if $info->limits->disable_facebook eq 1}<span style="color: green">{$lang.general.on}</span>{else}<span style="color: red">{$lang.general.off}</span>{/if}</td></tr>
+                <tr><td>{$lang.index.limits.disable_mobile}:</td><td>{if $info->limits->disable_mobile eq 1}<span style="color: green">{$lang.general.on}</span>{else}<span style="color: red">{$lang.general.off}</span>{/if}</td></tr>
             </table>
         </div>  
-
         <div id="rbuttons">
-                {if $perm.per_reinstall}
-				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=reinstall';">
-					<img class="manage_img" src="{$assetsUrl}/img/rebuild.png"/>{$lang.index.rebuild}</button>
-                {/if}
-                {if $perm.per_graphs}
-				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=graphs';">
-					<img class="manage_img" src="{$assetsUrl}/img/graphs.png"/>{$lang.index.graphs}</button>
-                {/if}
-                {if $perm.per_ip_management}
-				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=ip_management';">
-					<img class="manage_img" src="{$assetsUrl}/img/network2.png"/>{$lang.index.ip_management}</button>
-                {/if}
-                {if $perm.per_action_logs}
-				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=action_logs';">
-					<img class="manage_img" src="{$assetsUrl}/img/notes.png"/>{$lang.index.action_logs}</button>
+                {if $domainsManagement}
+				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=domainsManagement';">
+					<img class="manage_img" src="{$assetsUrl}/img/rebuild.png"/>{$lang.index.domainsManagement}</button>
                 {/if}
         </div>
-
-		{if $perm.caf_backups || $perm.caf_console}
-			<h3 class="header_label">{$lang.vm.additionals}</h3>
-			<div id='nbuttons'>
-				{if $perm.caf_backups}
-				<button class="btn"class="btn" onclick="window.location.href='{$servicePageUrl}&act=backups';">
-					<img class="manage_img" src="{$assetsUrl}img/backup.png"/> {$lang.vm.backups}</button>
-				{/if}
-				{if $perm.caf_console}
-				<button class="btn" onclick="window.open('{$servicePageUrl}&act=console','{$lang.vm.console},target=_blank','width=950,height=780,resizable=yes');return false;">
-					<img class="manage_img" src="{$assetsUrl}img/console.png"/> {$lang.vm.console}</button>
-				{/if}
-				{if $perm.caf_keypair && $isPrivateKey}
-				<button class="btn"class="btn" id="OpenStack_privateKeyDoownload" onclick="{if $delete_keypair}OpenStack_privateKeyDoownload();{else}window.location.href='{$servicePageUrl}&act=keyDownload&keytype=private';{/if}">
-					<img class="manage_img" src="{$assetsUrl}img/notes.png"/> {$lang.keypair.download_private}</button>
-                            {/if}
-                            {if $perm.caf_keypair && $isPublicKey}
-				<button class="btn"class="btn" onclick="window.location.href='{$servicePageUrl}&act=keyDownload&keytype=public';">
-					<img class="manage_img" src="{$assetsUrl}img/notes.png"/> {$lang.keypair.download_public}</button>
-				{/if}
-			</div>
-		{/if}
-              <h3 class="header_label">{$lang.index.mem_header}</h3>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>{$lang.index.mem_slot}</th>
-					<th>{$lang.index.mem_brand}</th>
-					<th>{$lang.index.mem_model}</th>
-                                   <th>{$lang.index.mem_size}</th>
-                                   <th>{$lang.index.mem_speed}</th>
-                                   <th>{$lang.index.mem_type}</th>
-				</tr>
-			</thead>
-			{foreach from=$memorys item="mem"}
-				<tr>
-					<td>{$mem->memorySlot}</td>
-					<td>{$mem->brand}</td>
-					<td>{$mem->model}</td>
-                                   <td>{$mem->size}</td>
-                                   <td>{$mem->speed}</td>
-                                   <td>{$mem->memoryType}</td>
-				</tr>
-			{foreachelse}
-				<tr><td colspan="6">{$lang.index.no_memorys}</td></tr>
-			{/foreach}
-		</table>
-              
-		<h3 class="header_label">{$lang.index.hdd_header}</h3>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>{$lang.index.hdd_type}</th>
-					<th>{$lang.index.hdd_product}</th>
-                                   <th>{$lang.index.hdd_firmware}</th>
-                                   <th>{$lang.index.hdd_size}</th>
-				</tr>
-			</thead>
-			{foreach from=$hdds item="hdd"}
-				<tr>
-					<td>{$hdd->diskType}</td>
-					<td>{$hdd->product}</td>
-					<td>{$hdd->firmwareVersion}</td>
-                                   <td>{$hdd->size}</td>
-				</tr>
-			{foreachelse}
-				<tr><td colspan="4">{$lang.index.no_hdds}</td></tr>
-			{/foreach}
-		</table>
-		
-		
-	{/if}
+        {/if}
 </div>
 
 <script type="text/javascript">

@@ -26,7 +26,7 @@ class DreamCommerce_Config {
 
       private $config = array();
       
-      public $lmsPartner, $username, $password, $host, $package, $period, $debugMode;
+      public $lmsPartner, $username, $password, $host, $package, $period, $debugMode, $hostPrefix, $nextStoreID, $licenseType, $shopVersion, $info, $domainsManagement;
 
       public function __construct($config, $params) {
             $this->config = $config;
@@ -35,6 +35,16 @@ class DreamCommerce_Config {
       
       public function setConfig($config){
             $this->config = $config;
+      }
+      
+      public function getOptionKey($optionName, $params){
+             $i = 1;
+            foreach ($this->config as $key => $value) {
+                  if ($optionName==$key && isset($params['configoption' . $i]) ) {
+                        return 'configoption' . $i;
+                  }
+                  $i++;
+            }
       }
 
       private function loadConfig($params) {
@@ -46,6 +56,13 @@ class DreamCommerce_Config {
                   }
                   $i++;
             }
+      }
+      /**
+       * 
+       * @return int
+       */
+      public function getPeriodID(){
+            return (int) $this->period;
       }
 
 }

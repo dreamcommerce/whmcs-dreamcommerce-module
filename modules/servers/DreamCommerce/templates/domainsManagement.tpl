@@ -23,41 +23,83 @@
  * @author Paweł Kopeć <pawelk@modulesgarden.com>
  *}
 <link rel="stylesheet" type="text/css" href="{$assetsUrl}/css/style.css" />
+<link href="{$assetsUrl}/css/bootstrap.css" rel="stylesheet">
 <div class="newvm_form" id="mg-wrapper" style="min-height: 400px;">
     <button onclick="window.location.href='{$serviceMainUrl}'" class="btn btn-small"><i class="icon-arrow-left"></i> {$lang.general.back}</button>
     	<p class='clear'>&nbsp;</p>
 	
     <h3 class="set_main_header">{$lang.domainsManagement.main_header}</h3> 
-    <div id="vm_alerts"></div>
+    <div id="vm_alerts">
+		{if $errors}
+                    {foreach from=$errors item="error"}
+                         <div class="box-error">{$error}</div> 
+                    {/foreach}
+		{else}
+                    {foreach from=$infos item="info"}
+                         <div class="box-success">{$info}</div> 
+                    {/foreach}
+              {/if}
+    </div>
     <br/>
-    <form method="get">
-          <input type="hidden" name="action" value="{$smarty.get.action}"/>
-          <input type="hidden" name="id" value="{$id}"/>
-          <input type="hidden" name="modop" value="{$smarty.get.modop}"/>
-          <input type="hidden" name="a" value="{$smarty.get.a}"/>
-          <input type="hidden" name="act" value="{$smarty.get.act}"/>
-          {$lang.action_logs.from}   <input type="text" name="from" value="" id="actLog_from" style="width:65px;"/>
-          <span style="margin-left: 5px;"> {$lang.action_logs.to} </span> <input type="text" name="to" value="" id="actLog_to" style="width:65px; " />
-          <input type="submit" class="btn btn-success" name="filter" value="{$lang.action_logs.filter}" style="margin-bottom: 10px; margin-left: 5px;"/>
-    </form>
     <table class="table table-bordered">
-          <tr>
-                <th>{$lang.action_logs.category}</th>
-                <th>{$lang.action_logs.title}</th>
-                <th>{$lang.action_logs.description}</th>
-                <th>{$lang.action_logs.remoteIP}</th>
-                <th>{$lang.action_logs.timestamp}</th>
-          </tr>
-          {foreach from=$logs item="log"}
+          <thead>
                 <tr>
-                      <td>{$log->category}</td>
-                      <td>{$log->title}</td>
-                      <td>{$log->description}</td>
-                      <td>{$log->remoteIP}</td>
-                      <td>{$log->getDate()}</td>
+                      <th>{$lang.domainsManagement.id}</th>
+                      <th>{$lang.domainsManagement.domain}</th>
+                      <th width="100" style="text-align: center;">{$lang.domainsManagement.actions}</th>
+                </tr>
+          </thead>
+          {foreach from=$licenseDomains key="key" item="domain"}
+                <tr>
+                      <td>{$key+1}</td>
+                      <td>{$domain}</td>
+                      <td style="text-align: center;"> <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain}">{$lang.general.delete}</a></td>
                 </tr>
           {foreachelse}
-                <tr><td colspan="6">{$lang.action_logs.no_log}</td></tr>
+                <tr><td colspan="3">{$lang.domainsManagement.empty}</td></tr>
           {/foreach}
     </table>
+    <div style="text-align: center;" >
+            <button class="btn btn-success" data-toggle="modal" data-target="#dc_modalAddDomain" id="dc_buttonDomainAdd"> {$lang.domainsManagement.add} </button>
+    </div>
 </div>
+    
+<div class="modal fade" id="dc_modalAddDomain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <form method="post">
+            <div class="modal-dialog">
+                  <div class="modal-content">
+                        <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                              <h4>{$lang.domainsManagement.modal.header}</h4>
+                        </div>
+                        <div class="modal-body">
+                              <table class="table table-bordered table-striped" style="width:100%; margin-top:10px;">
+                                    <tr>
+                                          <td style="width:25%;"> 
+                                                <label for="licenseDomainDomain" class="control-label" style="display:inline;float:none;">{$lang.domainsManagement.modal.domain}: </label>
+                                          </td>
+                                          <td>
+                                                <input type="text" name="licenseDomain[domain]" id="licenseDomainDomain" value="" style="width: 370px; margin-bottom: -1px;"/>
+                                          </td>
+                                    </tr>
+
+                              </table>
+                        </div>
+                        <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">{$lang.general.close}</button>
+                              <button type="submit" class="btn btn-primary"  name="act" value="addDomain">{$lang.general.add}</button>
+                        </div>
+                  </div>
+            </div>
+      </form>
+</div>
+{literal}
+<script src="{/literal}{$assetsUrl}{literal}/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+      $(document).ready(function() {
+            $(".so_delete").click(function(){
+                  return confirm("{/literal}{$lang.domainsManagement.deleteConfirm}{literal}");
+           });
+      });
+</script>
+{/literal}

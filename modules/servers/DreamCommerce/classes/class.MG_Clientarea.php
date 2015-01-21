@@ -40,7 +40,7 @@ abstract class MG_Clientarea {
 	 *
 	 * @var array
 	 */
-	public $_lang;
+	public $lang;
        
       public function __construct($serviceId) {
             $this->serviceId =$serviceId;
@@ -52,6 +52,7 @@ abstract class MG_Clientarea {
       }
       
       public function init(){
+            
       }
 	
 	public function run($action='index',$params){
@@ -59,14 +60,14 @@ abstract class MG_Clientarea {
                   $this->redToMainPage ();
 		if (!method_exists($this, $action. 'Action'))
 			throw new Exception('Client Area action not found');
-              
-		$this->_lang = $this->getLang($params);
+             
                       
 		$run = $action.'Action';
 		$vars = $this->$run($params);
-              $vars['lang'] =  $this->_lang;
+              $vars['lang'] =  $this->lang;
               $vars['assetsUrl'] =  $this->assetsUrl;
               $vars['serviceMainUrl'] = $this->serviceMainUrl;
+              $vars['servicePageUrl'] = $this->servicePageUrl;
               return array(
                                 'templatefile' => 'templates/'.$action,
                                 'vars' => $vars,
@@ -101,7 +102,7 @@ abstract class MG_Clientarea {
 		return empty($errors) ? false : true;
 	}
        
-       protected function getLang($params) {
+       public function getLang($params) {
             global $CONFIG;
             if (!empty($_SESSION['Language']))
                   $language = strtolower($_SESSION['Language']);
@@ -110,9 +111,9 @@ abstract class MG_Clientarea {
             else
                   $language = $CONFIG['Language'];
 
-            require_once($this->mainDir . DS . 'lang' . DS . 'english.php');
+            require_once($this->mainDir . DS . 'langs' . DS . 'english.php');
             
-            $langfilename = $this->mainDir . DS . 'lang' . DS . $language . '.php';
+            $langfilename = $this->mainDir . DS . 'langs' . DS . $language . '.php';
             if (file_exists($langfilename)) {
                   require_once($langfilename);
             }
@@ -122,6 +123,10 @@ abstract class MG_Clientarea {
       
       protected function redToMainPage(){
              header("Location: ". $this->serviceMainUrl);
+             die();
+       }
+      protected function redToCurrentPage(){
+             header("Location: ". $this->servicePageUrl."act=".$_GET['act']);
              die();
        }
 
