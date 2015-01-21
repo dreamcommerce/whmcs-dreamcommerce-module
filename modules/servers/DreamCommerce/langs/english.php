@@ -61,6 +61,10 @@ $lang['domainsManagement']['empty'] ="No domains available";
 $lang['domainsManagement']['add'] ="Add";
 $lang['domainsManagement']['modal']['header'] ="Add Domain";
 $lang['domainsManagement']['modal']['domain'] ="Domain Name";
+$lang['domainsManagement']['modal']['deleteDomain'] ="Delete Domain";
+$lang['domainsManagement']['dialog']['domain'] ="Domain";
 $lang['domainsManagement']['domainAdded'] ="Domain %s has been successfully added.";
 $lang['domainsManagement']['deleteConfirm'] ="Are you sure you want to delete this domain?";
 $lang['domainsManagement']['domainDeleted'] ="Domain %s has been successfully deleted.";
+
+

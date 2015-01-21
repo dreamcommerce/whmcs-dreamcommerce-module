@@ -26,8 +26,8 @@ if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'functions.php';
 include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
-        error_reporting(E_ALL);
-ini_set('display_errors', '1');
+//        error_reporting(E_ALL);
+//ini_set('display_errors', '1');
 /**
  * Config options are the module settings defined on a per product basis.
  * 
@@ -196,8 +196,8 @@ function DreamCommerce_CreateAccount($params) {
                   }
             }
             $period = $period? $period: $defaultPeriod;
-        
             $info = $dcConfig->info;
+            $api->checkDomainAvailability(null, $host);
             $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
             $hosting->setCustomField("accountID", (string)$result->account);
             $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ) ));
@@ -393,14 +393,38 @@ function DreamCommerce_AdminServicesTabFields($params) {
             $product = new DreamCommerce_Product($params['pid']);
             $hosting = new DreamCommerce_Hosting($params['serviceid']);
             $clientArea = new DreamCommerce($params['serviceid']);
+            $lang = $clientArea->getLang($params);
             $api->testConnection();
             $api->login();
-            
+            if(isset($_REQUEST['DreamCommerce_ajax'])){
+                  try{
+                        switch ($_POST['action']){					
+				case 'addDomain':
+                                  $api->addLicenseDomain(null,$params['customfields']['accountID'], $_REQUEST['domain']);
+					$res = array(
+						'result' => '1',
+						'msg' => sprintf($lang['domainsManagement']['domainAdded'], $_REQUEST['domain'])
+					);
+                             break;
+                            
+				default: throw new Exception('Action not supported');
+			 }
+                        
+                  } catch (Exception $ex) {
+                        $res = array(
+				'result'=> '0',
+				'msg'	=> $ex->getMessage()
+			   );
+                  }
+                  ob_clean();
+                  echo json_encode($res);
+                  die();
+            }
             $info = $api->getLicense(null,$params['customfields']['accountID'] );
             $data = array();
             global $templates_compiledir;
             $servicePageUrl = "clientsservices.php?userid={$_GET['userid']}&id={$_GET['id']}&productid={$params['packageid']}";
-            $lang = $clientArea->getLang($params);
+            
             $adminTemplateDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'admin';
             $sm = new Smarty();
             $sm->compile_dir = $templates_compiledir;
@@ -410,11 +434,15 @@ function DreamCommerce_AdminServicesTabFields($params) {
             $sm->assign("info",   $info);
             $data['License Info'] = $sm->fetch($adminTemplateDir.DIRECTORY_SEPARATOR.'licenseInfo.tpl');
 
+            $licenseDomains = $api->getLicenseDomains(null,  $params['customfields']['accountID']);
+            $sm->assign("licenseDomains",   $licenseDomains);
+            $data['Domains Management'] = $sm->fetch($adminTemplateDir.DIRECTORY_SEPARATOR.'domainsManagement.tpl');
+            
             return $data;
       } catch (DreamCommerce_Exception $ex) {
             echo '<div class="errorbox"><strong>ERROR</strong><br/>' .$ex->getMessage().' Code: '.$ex->getCode(). '</div>';
       } catch (Exception $ex) {
-            echo '<div class="errorbox"><strong>ERROR</strong><br/>' .$ex->getMessage().' File: '.$ex->getCode(). '  Line: '.$ex->getLine().'</div>';
+            echo '<div class="errorbox"><strong>ERROR</strong><br/>' .$ex->getMessage().' File: '.$ex->getFile(). '  Line: '.$ex->getLine().'</div>';
       }
       return array();
 }
@@ -464,5 +492,4 @@ function DreamCommerce_management($params) {
       } catch (Exception $ex) {
            return array("vars" => array("modulecustombuttonresult" => $ex->getMessage()));
       }
-      
 }
