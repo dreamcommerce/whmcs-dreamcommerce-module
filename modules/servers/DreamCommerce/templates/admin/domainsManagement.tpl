@@ -34,11 +34,10 @@
                 <tr>
                       <td>{$key+1}</td>
                       <td>{$domain}</td>
-                      <td style="text-align: center;"> <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain}">{$lang.general.delete}</a></td>
+                      <td style="text-align: center;"> <a class="so_delete" data-domain="{$domain}" style="color:#cc0000" href="{$servicePageUrl}&act=domainsManagement&delete={$domain}"><strong>{$lang.general.delete}</strong></a></td>
                 </tr>
-          {foreachelse}
-                <tr><td colspan="3">{$lang.domainsManagement.empty}</td></tr>
           {/foreach}
+                <tr><td colspan="3" id="dcDomainsListEmpty" {if $licenseDomains}style="display:none;"{/if}>{$lang.domainsManagement.empty}</td></tr>
   </table>
   <div style="margin:2px;" >
             <button class="btn btn-default" id="dc_buttonDomainAdd" type="button"> {$lang.domainsManagement.add} </button>
@@ -67,8 +66,10 @@
        </div>
        <div class="dialogSucces" style="color:green;  margin-left:5px;">   
        </div>
-       {$lang.domainsManagement.deleteConfirm}
-        <div style="text-align: center; margin-top:10px;">         
+       <div style="margin-left:5px; margin-top:10px;">   
+             {$lang.domainsManagement.deleteConfirm}
+       </div>
+        <div style="text-align: center; margin-left:5px;">         
               <img src="../images/loading.gif" class="dialogLoader" style="display:none;" />      
         </div>
  </div>      
@@ -78,24 +79,29 @@
             $(".so_delete").click(function(){
                   $("#so_dialogDeleteDomain .dialogError").html("").hide();
                   $("#so_dialogDeleteDomain .dialogSucces").html("").hide();
+                  var domain = $(this).attr("data-domain");
+                  var tr = $(this).closest("tr");
+                  
                   $("#so_dialogDeleteDomain" ).dialog({   
                             "buttons": [ 
                                 { 
-                                    text: "Cancel", 
+                                    text: "Close", 
                                     click: function() { 
                                         jQuery( this ).dialog( "close" ); 
                                     } 
                                 },
                                 {
-                                    text: "Save", 
+                                    text: "Delete", 
                                     click: function(){
                                         $("#so_dialogDeleteDomain .dialogLoader").show();
-                                        $.post("{/literal}{$servicePageUrl}{literal}&DreamCommerce_ajax=1", {"action":"addDomain", domain: $("#dcInputDomain").val() }, 
+                                        $.post("{/literal}{$servicePageUrl}{literal}&DreamCommerce_ajax=1", {"action":"deleteDomain", domain: domain }, 
                                             function(res){
                                                    $("#so_dialogDeleteDomain .dialogLoader").hide();
                                                     if (res.result == '1'){
                                                           $("#so_dialogDeleteDomain .dialogSucces").show().html(res.msg).fadeOut(6000);
-                                                          location.reload(); 
+                                                          tr.remove();
+                                                          if(!$(".so_delete").size())
+                                                                $("#dcDomainsListEmpty").show();
                                                     }else{
                                                            $("#so_dialogDeleteDomain .dialogError").show().html(res.msg).fadeOut(6000);
                                                     }

@@ -200,7 +200,7 @@ function DreamCommerce_CreateAccount($params) {
             $api->checkDomainAvailability(null, $host);
             $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
             $hosting->setCustomField("accountID", (string)$result->account);
-            $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ) ));
+            $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ), "username" =>$email ));
             
             if(empty($params['domain'] )){
                   $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
@@ -303,6 +303,9 @@ function DreamCommerce_SuspendAccount($params) {
             }
             $api->testConnection();
             $api->login();
+//            $api->addLicenseMail(null, $params['customfields']['accountID'], $params['clientsdetails']['email'], "tdfadstI32est", 100 );
+//            $api->dumpCall();
+//            die();
             $api->suspendLicense(null, $params['customfields']['accountID']);
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
@@ -406,10 +409,15 @@ function DreamCommerce_AdminServicesTabFields($params) {
 						'msg' => sprintf($lang['domainsManagement']['domainAdded'], $_REQUEST['domain'])
 					);
                              break;
-                            
+                            case 'deleteDomain':
+                                  $api->removeLicenseDomain(null,$params['customfields']['accountID'], $_REQUEST['domain']);
+                                  $res = array(
+						'result' => '1',
+						'msg' => sprintf($lang['domainsManagement']['domainDeleted'], $_REQUEST['domain'])
+					);
+                             break;
 				default: throw new Exception('Action not supported');
 			 }
-                        
                   } catch (Exception $ex) {
                         $res = array(
 				'result'=> '0',
