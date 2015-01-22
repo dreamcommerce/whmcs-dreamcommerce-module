@@ -200,12 +200,14 @@ function DreamCommerce_CreateAccount($params) {
             $api->checkDomainAvailability(null, $host);
             $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
             $hosting->setCustomField("accountID", (string)$result->account);
-            $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ), "username" =>$email ));
+            $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ), "username" =>"admin" ));
             
             if(empty($params['domain'] )){
                   $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
                   $product->update(array($optionKey => $dcConfig->nextStoreID +=1 ));
             }
+            
+           
             
             return 'success';         
       }

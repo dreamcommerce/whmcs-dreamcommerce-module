@@ -52,10 +52,17 @@
             </table>
         </div>  
         <div id="rbuttons">
+                <form method="post" target="blank" action="https://{$domain}/admin/dashboard"> 
                 {if $domainsManagement}
 				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=domainsManagement';">
 					<img class="manage_img" src="{$assetsUrl}/img/rebuild.png"/>{$lang.index.domainsManagement}</button>
                 {/if}
+           
+                      <input type="hidden" name="login" value="{$username}" />
+                      <input type="hidden" name="password" value="{$password}" />
+                      <input type="hidden" name="redirect" value="/admin/dashboard">
+                      <button class="btn" type="submit"><img class="manage_img" src="{$assetsUrl}/img/password.png"/>{$lang.index.login}</button>
+                </form>
         </div>
         {/if}
 </div>

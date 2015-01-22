@@ -56,6 +56,9 @@ class DreamCommerce extends MG_Clientarea {
              }
              return array(
                            "accountID" => $this->accountID,
+                           "domain" => $params['domain'],
+                           "username" => $params['username'],
+                           "password" => $params['password'],
                            "domainsManagement" => $this->config->domainsManagement,
                            "info" => $info,
                            "errors" => $this->getErrors(),
@@ -92,7 +95,9 @@ class DreamCommerce extends MG_Clientarea {
              } catch (Exception $ex) {
                    $this->addError($ex->getMessage());
              }
+             
              return array(
+                 
                          "licenseDomains" => $licenseDomains,
                            "errors" => $this->getErrors(),
                            "infos" => $this->getInfos(),

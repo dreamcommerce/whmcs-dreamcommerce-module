@@ -52,6 +52,7 @@ $lang['index']['limits']['webapi'] ='Limit WebAPI';
 $lang['index']['limits']['disable_facebook'] ='Facebook';
 $lang['index']['limits']['disable_mobile'] ='Mobile';
 $lang['index']['domainsManagement'] ="Domains Management";
+$lang['index']['login']="Login to Control Panel";
 
 $lang['domainsManagement']['main_header'] ="Domains Management";
 $lang['domainsManagement']['id'] ="N.";
