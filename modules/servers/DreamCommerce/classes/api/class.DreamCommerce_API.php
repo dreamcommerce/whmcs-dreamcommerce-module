@@ -29,7 +29,13 @@ class DreamCommerce_API  extends MG_CurlApi{
       protected  $password;
       
       private $session;
-
+      /**
+       * Init object
+       * @param sting $url
+       * @param sting $login
+       * @param sting $password
+       * @param sting $debug
+       */
       public function __construct($url, $login, $password, $debug) {
            $this->isJson = true;
            $this->url =  $url;
@@ -38,7 +44,12 @@ class DreamCommerce_API  extends MG_CurlApi{
            $this->password = $password;
            parent::__construct($this->url, $this->login, $this->password, "DreamCommerce", $this->debug);
       }      
-      
+      /**
+       * Process Request
+       * @param object $res
+       * @return object
+       * @throws DreamCommerce_Exception
+       */
       private function processRequest($res){
             if(isset($res->error)&& $res->error){
                   throw new DreamCommerce_Exception((string) $res->error , (int)$res->code);

@@ -17,11 +17,9 @@
  *
  * ******************************************************************** */
 
-/** 
- * @author Pawel Kopec <pawelk@modulesgarden.com>
- */
 /**
- * Client Area controller
+ * Controller Client Area
+ * @author Pawel Kopec <pawelk@modulesgarden.com>
  */
 class DreamCommerce extends MG_Clientarea {
       /**
@@ -36,21 +34,30 @@ class DreamCommerce extends MG_Clientarea {
       protected $config;
       
       private $accountID;
-      
-	public function init($params) {
+      /**
+       * Init Object
+       * @param array $params
+       */
+      public function init($params) {
              $this->lang   = $this->getLang($params);
              $config       = DreamCommerce_ConfigOptions(false);
              $this->config = new DreamCommerce_Config($config, $params);
              $this->api    = new DreamCommerce_API($this->config->host, $this->config->username, $this->config->password, $this->config->debugMode);
              $this->accountID = $params['customfields']['accountID'];
        }
-
+       
+       /**
+        * Client Area Index Action
+        * @param array $params
+        * @return array
+        */
 	public function indexAction($params) {
              
              try{
                    $this->api->testConnection();
                    $this->api->login();
                    $info = $this->api->getLicense(null, $this->accountID);
+
              } catch (Exception $ex) {
                    $this->addError($ex->getMessage());
              }
@@ -66,12 +73,17 @@ class DreamCommerce extends MG_Clientarea {
                   );
 
 	}
-       
+       /**
+        * Client Area Aomains Management Action
+        * @param array $params
+        * @return array
+        */
        public function domainsManagementAction($params) {
              
              try{
                    $this->api->testConnection();
                    $this->api->login();
+                   $domains = mysql_get_array("select id,domain from tbldomains where userid=? and `status`=? order by domain", array($params['clientsdetails']['userid'],"Active"));
                    try{
                          if(isset($_POST['act'])){
                                if($_POST['act']=="addDomain"){
@@ -90,51 +102,33 @@ class DreamCommerce extends MG_Clientarea {
                          $this->addError($ex->getMessage());
                          $this->redToCurrentPage();
                    }
+                   $domains[] = array("domain" =>  $params['domain'] );
+                   $temp = array();
+                   foreach($domains as $domain){
+                      $temp[] =    $domain['domain'];
+                   } 
+                   $domains = $temp;
+                   unset($temp);
                    $licenseDomains = $this->api->getLicenseDomains(null,  $this->accountID);
+             
+                   foreach($licenseDomains as  $domain){
+                         if(in_array((string)$domain, $domains)){
+                               $key = array_search((string)$domain, $domains);
+                               unset($domains[$key]);
+                         }
+                   }
                             
              } catch (Exception $ex) {
                    $this->addError($ex->getMessage());
              }
              
              return array(
-                 
+                          "domains" => $domains,
                          "licenseDomains" => $licenseDomains,
                            "errors" => $this->getErrors(),
                            "infos" => $this->getInfos(),
                   );
 
 	}
-       
-      
-        public function ajaxAction($params){
-		try {
-
-			switch ($_POST['subaction']){					
-				case 'details':
-					$res = array(
-						'result' => '1',
-						'data' => 'test',
-					);
-					break;
-                             break;
-				default: throw new Exception('Action not supported');
-			}
-			
-			if (!isset($res)){
-				$res = array(
-					'result' => '1',
-					'msg' => $msg,
-				);
-			}
-		} catch (Exception $e){
-			$res = array(
-				'result'=> '0',
-				'msg'	=> $e->getMessage()
-			);
-		}
-		echo json_encode($res);
-		die();
-	}
-       
-
+           
 }

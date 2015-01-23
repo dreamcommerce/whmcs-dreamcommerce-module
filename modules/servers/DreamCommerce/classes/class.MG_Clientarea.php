@@ -25,7 +25,6 @@
 /**
  * @author Grzegorz Draganik <grzegorz@modulesgarden.com>
  */
-
 abstract class MG_Clientarea {
 
       public $serviceId;
@@ -41,7 +40,10 @@ abstract class MG_Clientarea {
 	 * @var array
 	 */
 	public $lang;
-       
+      /**
+       * Construct
+       * @param int $serviceId
+       */
       public function __construct($serviceId) {
             $this->serviceId =$serviceId;
             $this->module = get_class($this);
@@ -51,10 +53,19 @@ abstract class MG_Clientarea {
             $this->mainDir = dirname(__FILE__) . DS."..";
       }
       
+      /**
+       * Init object
+       */
       public function init(){
             
       }
-	
+      /**
+       * Run Action
+       * @param action $action
+       * @param array $params
+       * @return array
+       * @throws Exception
+       */
 	public function run($action='index',$params){
              if($action==null)
                   $this->redToMainPage ();
@@ -101,7 +112,12 @@ abstract class MG_Clientarea {
 		$errors = isset($_SESSION[get_class($this)]['errors']) ? $_SESSION[get_class($this)]['errors'] : array();
 		return empty($errors) ? false : true;
 	}
-       
+       /**
+        * Get Lang
+        * @global array $CONFIG
+        * @param array  $params
+        * @return array 
+        */
        public function getLang($params) {
             global $CONFIG;
             if (!empty($_SESSION['Language']))

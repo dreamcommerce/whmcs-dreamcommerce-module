@@ -1,7 +1,7 @@
 <?php
 
 /**********************************************************************
- * Custom developed. (2015-01-21)
+ * DreamCommerce Product developed. (2015-01-20)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->       http://modulesgarden.com
@@ -96,7 +96,9 @@ class MG_CurlApi{
             }
             return $data;
       }
-      
+      /**
+       * Helper function
+       */
       public function dumpCall(){
             echo "<pre>";
             echo "URL: \n";

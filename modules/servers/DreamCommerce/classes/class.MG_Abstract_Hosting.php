@@ -1,7 +1,6 @@
 <?php
-
 /* * ********************************************************************
- *  DirectVPS (2013-09-13)
+ *  reamCommerce Product developed (2013-09-13)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->        http://modulesgarden.com
@@ -24,7 +23,6 @@
  * @author Grzegorz Draganik <grzegorz@modulesgarden.com>
  * @author Mariusz Miodowski <mariusz@modulesgarden.com>
  */
-
 abstract class MG_Abstract_Hosting {
 
 	//Hosting ID
@@ -38,13 +36,17 @@ abstract class MG_Abstract_Hosting {
 	public $configurable_options = array();
 	//server configuration
 	public $server_details = array();
-
+       
 	public function __construct($id) {
 		$this->id = $id;
 
               $this->load();
 	}
-
+       /**
+        * Update hosting
+        * @param array $values
+        * @return boolean
+        */
 	public function update(array $values) {
 		$sets = array();
 		foreach ($values as $k => $v) {
@@ -54,7 +56,9 @@ abstract class MG_Abstract_Hosting {
 
 		return mysql_query('UPDATE tblhosting SET ' . implode(',', $sets) . ' WHERE id = ' . (int) $this->id);
 	}
-
+       /**
+        * Get Hosting Details
+        */
 	public function load() {
 		//Get Hosting Details
 		$q = mysql_get_row("SELECT * FROM tblhosting WHERE id = ?", array($this->id));
@@ -128,7 +132,12 @@ abstract class MG_Abstract_Hosting {
 
 		return false;
 	}
-
+       /**
+        * Set Custom Field
+        * @param string $fieldname
+        * @param string $value
+        * @return boolean
+        */
 	public function setCustomField($fieldname, $value){
 		$customField = mysql_fetch_assoc(mysql_query_safe('
 			SELECT f.id
@@ -149,7 +158,11 @@ abstract class MG_Abstract_Hosting {
 			$customField['id'], $this->id, $value
 		));
 	}
-	
+	/**
+        * Get Custom Fields
+        * @param string $fieldname
+        * @return array
+        */
 	public function getCustomFields($fieldname = null){
 		$fields = array();
 		$q = mysql_query('
@@ -167,7 +180,12 @@ abstract class MG_Abstract_Hosting {
 		}
 		return $fields;
 	}
-
+       /**
+        * Get First And Last Name
+        * @param string $str
+        * @param string $first
+        * @return string
+        */
 	public static function getFirstAndLastName($str, $first = true) {
 		$pos = strpos($str, '|');
 		if ($pos) {

@@ -1,7 +1,7 @@
 <?php
 
 /**********************************************************************
- * Custom developed. (2014-12-17)
+ * DreamCommerce product developed. (2014-12-17)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->       http://modulesgarden.com
@@ -22,7 +22,6 @@
  * Load  classes
  * @author Pawel Kopec <pawelk@modulesgarden.com>
  * @param string $class
- * @throws Exception
  */
 function DreamCommerce_Loader($class){
       

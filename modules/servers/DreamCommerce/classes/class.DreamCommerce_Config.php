@@ -1,7 +1,7 @@
 <?php
 
 /**********************************************************************
- * Custom developed. (2015-01-20)
+ * DreamCommerce Product developed. (2015-01-20)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->       http://modulesgarden.com
@@ -20,23 +20,35 @@
 
 /**
  * @author Pawel Kopec <pawelk@modulesgarden.com>
+ * Product configuration
  */
-
 class DreamCommerce_Config {
 
       private $config = array();
       
-      public $lmsPartner, $username, $password, $host, $package, $period, $debugMode, $hostPrefix, $nextStoreID, $licenseType, $shopVersion, $info, $domainsManagement;
-
+      public $lmsPartner, $username, $password, $host, $package, $period, $debugMode, $hostPrefix, $nextStoreID, $licenseType, $shopVersion, $domainsManagement;
+      /**
+       * Construct
+       * @param array $config
+       * @param array $params
+       */
       public function __construct($config, $params) {
             $this->config = $config;
             $this->loadConfig($params);
       }
-      
+      /**
+       * Set Config
+       * @param array $config
+       */
       public function setConfig($config){
             $this->config = $config;
       }
-      
+      /**
+       * Get Option Key
+       * @param string $optionName
+       * @param array $params
+       * @return string
+       */
       public function getOptionKey($optionName, $params){
              $i = 1;
             foreach ($this->config as $key => $value) {
@@ -46,7 +58,10 @@ class DreamCommerce_Config {
                   $i++;
             }
       }
-
+      /**
+       * Load Config
+       * @param array $params
+       */
       private function loadConfig($params) {
 
             $i = 1;
@@ -58,7 +73,7 @@ class DreamCommerce_Config {
             }
       }
       /**
-       * 
+       * Get Period ID
        * @return int
        */
       public function getPeriodID(){

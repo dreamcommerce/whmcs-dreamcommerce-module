@@ -1,6 +1,6 @@
 <?php
 /**********************************************************************
- * CloudLinux Licenses Product developed. (2014-06-04)
+ *  DreamCommerce product developed. (2014-12-17)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->       http://modulesgarden.com

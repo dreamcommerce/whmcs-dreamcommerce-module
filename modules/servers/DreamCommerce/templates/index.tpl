@@ -54,7 +54,7 @@
         <div id="rbuttons">
                 <form method="post" target="blank" action="https://{$domain}/admin/dashboard"> 
                 {if $domainsManagement}
-				<button class="btn" onclick="window.location.href ='{$servicePageUrl}&act=domainsManagement';">
+				<button class="btn" type="button" onclick="window.location.href ='{$servicePageUrl}&act=domainsManagement';">
 					<img class="manage_img" src="{$assetsUrl}/img/rebuild.png"/>{$lang.index.domainsManagement}</button>
                 {/if}
            
@@ -92,9 +92,6 @@
               
 	};
 	
-       function so_disableMessages(){
-
-       }
 	jQuery(document).ready(function(){
 		OSUI.disableMessages();
 	});

@@ -87,7 +87,12 @@ class DreamCommerce_Product extends MG_Abstract_Product {
 			)
 		)
 	);
-	
+
+       /**
+        * Remove Group Config
+        * @param int $key
+        * @return boolean
+        */
 	public function removeGroupConfig($key){
              if(isset($this->defaultConfig[$key])){
                    $removeConf = false;
@@ -107,7 +112,10 @@ class DreamCommerce_Product extends MG_Abstract_Product {
              }
              return false;
        }
-       
+       /**
+        * Get User Permission
+        * @return array
+        */
        public function getUserPermission(){
              $conf = $this->loadConfig();
              $perm = array();

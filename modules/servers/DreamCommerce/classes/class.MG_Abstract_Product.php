@@ -47,7 +47,9 @@ abstract class MG_Abstract_Product {
                     $this->load();
               }
 	}
-
+       /**
+        * Auto Config
+        */
 	public function runAutoConfiguration() {
 		//Generate Custom Fields
 		if ($_REQUEST['modaction'] == 'generate_custom_fields') {
@@ -239,7 +241,10 @@ abstract class MG_Abstract_Product {
 
 		return true;
 	}
-       
+       /**
+        * Update DefaultConfigurable Options
+        * @return boolean
+        */
        public function updateDefaultConfigurableOptions(){
              
             $conif = mysql_fetch_assoc(mysql_safequery('SELECT * FROM tblproductconfiglinks WHERE pid = ?', array($this->id)));
@@ -365,8 +370,8 @@ abstract class MG_Abstract_Product {
 	}
 
 	/**
-	 * 
-	 * @return type
+	 * Has Assigned Server Group
+	 * @return boolean
 	 */
 	public function hasAssignedServerGroup() {
 		$q = mysql_safequery('SELECT servergroup FROM tblproducts WHERE id = ?', array($this->id));
@@ -375,8 +380,8 @@ abstract class MG_Abstract_Product {
 	}
 
 	/**
-	 * 
-	 * @return type
+	 * Get server params
+	 * @return array
 	 */
 	public function getParams() {
 		$result = mysql_safequery("
@@ -403,17 +408,28 @@ abstract class MG_Abstract_Product {
 	// ========================================
 	// ============ CUSTOM CONFIG =============
 	// ========================================
-
+       /**
+        * 
+        * @param string $name
+        * @return string
+        */
 	public function getConfig($name) {
 		$this->loadConfig();
 		return isset($this->_config[$name]) ? $this->_config[$name] : null;
 	}
-
+       /**
+        * Isse tConfig
+        * @param string $name
+        * @return boolean
+        */
 	public function issetConfig($name) {
 		$this->loadConfig();
 		return isset($this->_config[$name]);
 	}
-
+       /**
+        * Load Config
+        * @return array
+        */
 	public function loadConfig() {
 		if ($this->_config !== null)
 			return $this->_config;
@@ -428,7 +444,12 @@ abstract class MG_Abstract_Product {
 		}
 		return $this->_config;
 	}
-
+       /**
+        * Save Config
+        * @param string $name
+        * @param string $value
+        * @return boolean
+        */
 	public function saveConfig($name, $value) {
 		$this->setupDbTable();
 		if (is_array($value))
@@ -440,11 +461,21 @@ abstract class MG_Abstract_Product {
 			$value
 		));
 	}
-
+       /**
+        * Clear Config
+        * @return boolean
+        */
 	public function clearConfig() {
 		return mysql_query_safe('DELETE FROM ' . $this->_tableName . ' WHERE product_id = ' . (int) $this->id);
 	}
-
+       /**
+        * Render Config Options
+        * @param string $scripts
+        * @param string $moduleWikiUrl
+        * @param string $moduleVersion
+        * @param string $moduleLogoSrc
+        * @return string
+        */
 	public function renderConfigOptions($scripts = '', $moduleWikiUrl = 'http://www.docs.modulesgarden.com/Main_Page', $moduleVersion = '1.0.0', $moduleLogoSrc = ''){
 		$scripts .= '
 			<style type="text/css">
@@ -568,7 +599,16 @@ abstract class MG_Abstract_Product {
 			$str .= '</tr>';
 		return $scripts . $str;
 	}
-
+       /**
+        * Render Config Option Input
+        * @param string $name
+        * @param string $type
+        * @param string $default
+        * @param array $options
+        * @param string $optionsValuesFromKeys
+        * @return string
+        * @throws Exception
+        */
 	public function renderConfigOptionInput($name, $type, $default, array $options = array(), $optionsValuesFromKeys = false) {
 		$value = $this->getConfig($name) ? $this->getConfig($name) : ($this->issetConfig($name) ? '' : $default);
 		switch ($type) {
@@ -615,7 +655,10 @@ abstract class MG_Abstract_Product {
 		// NO CHECKBOX
 		throw new Exception('Config Option "'.$name.'" type "'.$type.'" not supported');
 	}
-
+       /**
+        * Setup Db Table
+        * @return boolean
+        */
 	public function setupDbTable() {
 		return mysql_query_safe('CREATE TABLE IF NOT EXISTS `' . $this->_tableName . '` (
 			`setting` varchar(100) NOT NULL,

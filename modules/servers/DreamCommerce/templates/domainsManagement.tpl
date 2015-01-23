@@ -79,7 +79,11 @@
                                                 <label for="licenseDomainDomain" class="control-label" style="display:inline;float:none;">{$lang.domainsManagement.modal.domain}: </label>
                                           </td>
                                           <td>
-                                                <input type="text" name="licenseDomain[domain]" id="licenseDomainDomain" value="" style="width: 370px; margin-bottom: -1px;"/>
+                                                <select  name="licenseDomain[domain]" id="licenseDomainDomain" style="width: 220px; margin-bottom: -1px;">
+                                                      {foreach from=$domains item=domain}
+                                                            <option value="{$domain}">{$domain}</option>
+                                                      {/foreach}   
+                                                </select>
                                           </td>
                                     </tr>
 

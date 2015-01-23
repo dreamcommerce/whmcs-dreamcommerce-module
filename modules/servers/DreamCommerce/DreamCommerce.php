@@ -1,7 +1,7 @@
 <?php
 
 /**********************************************************************
- * Custom developed. (2014-12-17)
+ * DreamCommerce product developed. (2014-12-17)
  * *
  *
  *  CREATED BY MODULESGARDEN       ->       http://modulesgarden.com
@@ -26,8 +26,7 @@ if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'functions.php';
 include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
-//        error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+
 /**
  * Config options are the module settings defined on a per product basis.
  * 
@@ -98,18 +97,11 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
             'Size'          =>  '25',
            'Description'   =>  'If empty latest version will be used'
         ),
-            "info" =>  array
-        (
-           "FriendlyName" => "Additional Notes",
-            'Type'          =>  'textarea',
-            'Size'          =>  '25',
-           'Description'   =>  ''
-        ),
             "domainsManagement" =>  array
         (
            "FriendlyName" => "Domains Management",
             'Type'          =>  'yesno',
-           'Description'   =>  ''
+           'Description'   =>  'Enable "Domains Management" In Client Area'
         ),
             
           "debugMode"   =>  array
@@ -196,7 +188,7 @@ function DreamCommerce_CreateAccount($params) {
                   }
             }
             $period = $period? $period: $defaultPeriod;
-            $info = $dcConfig->info;
+            $info = $dcConfig->lmsPartner;
             $api->checkDomainAvailability(null, $host);
             $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
             $hosting->setCustomField("accountID", (string)$result->account);
@@ -206,9 +198,6 @@ function DreamCommerce_CreateAccount($params) {
                   $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
                   $product->update(array($optionKey => $dcConfig->nextStoreID +=1 ));
             }
-            
-           
-            
             return 'success';         
       }
       catch (DreamCommerce_Exception $ex) {
@@ -247,16 +236,7 @@ function DreamCommerce_ChangePackage($params) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
       }
 }
-/**
- * Change Password
- * 
- * @param array $params
- * @return string
- */
-function DreamCommerce_ChangePassword($params) {
-      if (!$params['customfields']['accountID'])
-		return 'Custom Field /Account/ is empty';
-}
+
 /**
  * This function is called when a termination is requested.
  * 
@@ -305,9 +285,6 @@ function DreamCommerce_SuspendAccount($params) {
             }
             $api->testConnection();
             $api->login();
-//            $api->addLicenseMail(null, $params['customfields']['accountID'], $params['clientsdetails']['email'], "tdfadstI32est", 100 );
-//            $api->dumpCall();
-//            die();
             $api->suspendLicense(null, $params['customfields']['accountID']);
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
@@ -383,6 +360,7 @@ function DreamCommerce_Renew($params) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
       }
 }
+
 /**
  * This function is used to define additional fields
  * @param array $params
