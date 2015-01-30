@@ -49,6 +49,8 @@
                 <tr><td>{$lang.index.limits.admins}:</td><td>{$info->limits->admins}</td></tr>
                 <tr><td>{$lang.index.limits.disable_facebook}:</td><td>{if $info->limits->disable_facebook eq 1}<span style="color: green">{$lang.general.on}</span>{else}<span style="color: red">{$lang.general.off}</span>{/if}</td></tr>
                 <tr><td>{$lang.index.limits.disable_mobile}:</td><td>{if $info->limits->disable_mobile eq 1}<span style="color: green">{$lang.general.on}</span>{else}<span style="color: red">{$lang.general.off}</span>{/if}</td></tr>
+                <tr><td>{$lang.index.username}:</td><td>{$username}</td></tr>
+                <tr><td>{$lang.index.password}:</td><td>{$password}</td></tr>
             </table>
         </div>  
         <div id="rbuttons">

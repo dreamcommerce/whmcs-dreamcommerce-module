@@ -43,25 +43,26 @@
     <br/>
     <table class="table table-bordered">
           <thead>
-                <tr>
-                      <th>{$lang.domainsManagement.id}</th>
+                <tr style="background-color:#E6E6E6">
+
                       <th>{$lang.domainsManagement.domain}</th>
                       <th width="100" style="text-align: center;">{$lang.domainsManagement.actions}</th>
                 </tr>
           </thead>
           {foreach from=$licenseDomains key="key" item="domain"}
                 <tr>
-                      <td>{$key+1}</td>
                       <td>{$domain}</td>
                       <td style="text-align: center;"> <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain}">{$lang.general.delete}</a></td>
                 </tr>
           {foreachelse}
-                <tr><td colspan="3">{$lang.domainsManagement.empty}</td></tr>
+                <tr><td colspan="2">{$lang.domainsManagement.empty}</td></tr>
           {/foreach}
     </table>
-    <div style="text-align: center;" >
-            <button class="btn btn-success" data-toggle="modal" data-target="#dc_modalAddDomain" id="dc_buttonDomainAdd"> {$lang.domainsManagement.add} </button>
-    </div>
+    {if $domains}
+          <div style="text-align: center;" >
+                  <button class="btn btn-success" data-toggle="modal" data-target="#dc_modalAddDomain" id="dc_buttonDomainAdd"> {$lang.domainsManagement.add} </button>
+          </div>
+    {/if}
 </div>
     
 <div class="modal fade" id="dc_modalAddDomain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

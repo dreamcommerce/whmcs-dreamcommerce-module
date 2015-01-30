@@ -69,7 +69,7 @@ class DreamCommerce extends MG_Clientarea {
                            "domainsManagement" => $this->config->domainsManagement,
                            "info" => $info,
                            "errors" => $this->getErrors(),
-                           "infos" => $this->getInfos(),
+                           "infos"  => $this->getInfos(),
                   );
 
 	}
@@ -117,7 +117,6 @@ class DreamCommerce extends MG_Clientarea {
                                unset($domains[$key]);
                          }
                    }
-                            
              } catch (Exception $ex) {
                    $this->addError($ex->getMessage());
              }

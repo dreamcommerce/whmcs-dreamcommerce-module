@@ -56,7 +56,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
         ),
           'host'          =>  array
         (
-            "FriendlyName" => "Host",
+            "FriendlyName" => "API End Point",
             'Type'          =>  'text',
             'Size'          =>  '45',
         ),
@@ -76,14 +76,16 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
            "FriendlyName" => "Store Host Prefix",
             'Type'          =>  'text',
             'Size'          =>  '25',
-           'Description'   =>  'Used when domain is not ordered. Eg. store'
+           'Description'   =>  'Used when domain is not ordered. Eg. store',
+            "Default" => "store",  
         ),
             'nextStoreID'          =>  array
         (
            "FriendlyName" => "Next Store ID",
             'Type'          =>  'text',
             'Size'          =>  '25',
-           'Description'   =>  'Used for hostname. Eg. 1'
+            'Description'   =>  'Used for hostname. Eg. 1',
+            "Default" => "1",  
         ),
          'licenseType'        => array(
             "FriendlyName" => "License Type",
