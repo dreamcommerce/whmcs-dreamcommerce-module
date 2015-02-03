@@ -25,19 +25,17 @@
  <table  width="100%" border="0" cellspacing="1" cellpadding="3" class="datatable">
           <thead>
                 <tr>
-                      <th>{$lang.domainsManagement.id}</th>
                       <th>{$lang.domainsManagement.domain}</th>
                       <th width="100" style="text-align: center;">{$lang.domainsManagement.actions}</th>
                 </tr>
           </thead>
           {foreach from=$licenseDomains key="key" item="domain"}
                 <tr>
-                      <td>{$key+1}</td>
                       <td>{$domain}</td>
                       <td style="text-align: center;"> <a class="so_delete" data-domain="{$domain}" style="color:#cc0000" href="{$servicePageUrl}&act=domainsManagement&delete={$domain}"><strong>{$lang.general.delete}</strong></a></td>
                 </tr>
           {/foreach}
-                <tr><td colspan="3" id="dcDomainsListEmpty" {if $licenseDomains}style="display:none;"{/if}>{$lang.domainsManagement.empty}</td></tr>
+                <tr><td colspan="2" id="dcDomainsListEmpty" {if $licenseDomains}style="display:none;"{/if}>{$lang.domainsManagement.empty}</td></tr>
   </table>
   <div style="margin:2px;" >
             <button class="btn btn-default" id="dc_buttonDomainAdd" type="button"> {$lang.domainsManagement.add} </button>
