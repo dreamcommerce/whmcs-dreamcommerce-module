@@ -105,7 +105,7 @@ class DreamCommerce extends MG_Clientarea {
                    $domains[] = array("domain" =>  $params['domain'] );
                    $temp = array();
                    foreach($domains as $domain){
-                      $temp[] =    $domain['domain'];
+                      $temp[] =    array("id" => $domain['id'], "name" => $domain['domain']);
                    } 
                    $domains = $temp;
                    unset($temp);

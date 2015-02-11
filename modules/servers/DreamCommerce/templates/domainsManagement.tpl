@@ -51,7 +51,20 @@
           </thead>
           {foreach from=$licenseDomains key="key" item="domain"}
                 <tr>
-                      <td>{$domain}</td>
+                      <td>
+                            
+                            {assign var="match" value=""}
+                            {foreach from=$domains item=domain2}
+                                  {if $domain2.id && $domain eq $domain2.name}
+                                   {assign var="match" value=$domain2}
+                                   {/if}
+                            {/foreach} 
+                            {if  $match}
+                                  <a href="clientarea.php?action=domaindetails&id={$match.id}">{$domain}</a>
+                                  {else}
+                                        {$domain}
+                            {/if}
+                      </td>
                       <td style="text-align: center;"> <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain}">{$lang.general.delete}</a></td>
                 </tr>
           {foreachelse}
@@ -82,7 +95,7 @@
                                           <td>
                                                 <select  name="licenseDomain[domain]" id="licenseDomainDomain" style="width: 220px; margin-bottom: -1px;">
                                                       {foreach from=$domains item=domain}
-                                                            <option value="{$domain}">{$domain}</option>
+                                                            <option value="{$domain.name}">{$domain.name}</option>
                                                       {/foreach}   
                                                 </select>
                                           </td>
