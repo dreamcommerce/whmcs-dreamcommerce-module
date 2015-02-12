@@ -203,7 +203,7 @@ function DreamCommerce_CreateAccount($params) {
             return 'success';         
       }
       catch (DreamCommerce_Exception $ex) {
-            return "ERROR: {$ex->getMessage()} Code: {$ex->getCode()}";
+            return "ERROR: {$ex->getMessage()}";
       }
       catch (Exception $ex) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
@@ -439,10 +439,22 @@ function DreamCommerce_AdminServicesTabFields($params) {
 
 // =========================== CLIENT AREA ==================================
 
-function DreamCommerce_ClientAreaCustomButtonArray() {
-	return array(
-		"Management" => "management",
-	);
+function DreamCommerce_ClientAreaCustomButtonArray($params ) {
+      try {
+            $clientArea = new DreamCommerce($params['serviceid']);
+            $lang = $clientArea->getLang($params);
+            $config = DreamCommerce_ConfigOptions(false);
+            $dcConfig = new DreamCommerce_Config($config, $params);
+            if($dcConfig->domainsManagement)
+            return array(
+                          $lang['domainsManagement']['button'] => "management",
+                   );  
+      } catch (Exception $ex) {
+             return array(
+                    "Management" => "management",
+             );
+      }
+
 }
 
 /**
@@ -476,9 +488,10 @@ function DreamCommerce_management($params) {
       $module =  basename(dirname(__FILE__));
       try {
             if ($module::$run) return false;
-            $clientArea = new $module($params['serviceid']);
+            $clientArea = new DreamCommerce($params['serviceid']);
             $clientArea->init($params);
-            return $clientArea->run($_GET['act'], $params);
+            $act = $_GET['act']? $_GET['act']: 'domainsManagement';
+            return $clientArea->run( $act, $params);
       } catch (Exception $ex) {
            return array("vars" => array("modulecustombuttonresult" => $ex->getMessage()));
       }

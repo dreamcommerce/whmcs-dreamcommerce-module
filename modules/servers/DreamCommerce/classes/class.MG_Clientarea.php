@@ -127,11 +127,11 @@ abstract class MG_Clientarea {
             else
                   $language = $CONFIG['Language'];
 
-            require_once($this->mainDir . DS . 'langs' . DS . 'english.php');
+            require($this->mainDir . DS . 'langs' . DS . 'english.php');
             
             $langfilename = $this->mainDir . DS . 'langs' . DS . $language . '.php';
             if (file_exists($langfilename)) {
-                  require_once($langfilename);
+                  require($langfilename);
             }
                  
             return isset($lang) ? $lang : array();

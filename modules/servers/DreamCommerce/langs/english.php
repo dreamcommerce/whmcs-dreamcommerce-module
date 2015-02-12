@@ -57,6 +57,7 @@ $lang['index']['username'] ="Username";
 $lang['index']['password'] ="Password";
 
 $lang['domainsManagement']['main_header'] ="Domains Management";
+$lang['domainsManagement']['button'] ="Domains Management";
 $lang['domainsManagement']['id'] ="N.";
 $lang['domainsManagement']['domain'] ="Domain";
 $lang['domainsManagement']['actions'] ="Action";
