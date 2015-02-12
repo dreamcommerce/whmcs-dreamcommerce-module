@@ -111,10 +111,12 @@ class DreamCommerce extends MG_Clientarea {
                    unset($temp);
                    $licenseDomains = $this->api->getLicenseDomains(null,  $this->accountID);
              
-                   foreach($licenseDomains as  $domain){
-                         if(in_array((string)$domain, $domains)){
-                               $key = array_search((string)$domain, $domains);
-                               unset($domains[$key]);
+                   foreach($licenseDomains as $key => $domain){
+                         $licenseDomains[$key] =  array("id" => "", "name" => $domain);
+                         foreach($domains as $k => $d){
+                               if($domain == $d['name'] )
+                                     unset($domains[$k]);
+                               $licenseDomains[$key]['id'] = $d['id'];
                          }
                    }
              } catch (Exception $ex) {

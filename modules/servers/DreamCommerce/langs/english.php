@@ -32,6 +32,7 @@ $lang['general']['on']				= 'On';
 $lang['general']['off']				= 'Off';
 $lang['general']['close']				= 'Close';
 $lang['general']['delete']				= 'Delete';
+$lang['general']['manage']				= 'Manage';
 
 $lang['index']['main_header'] ='License Info';
 $lang['index']['host'] ='Host';
@@ -60,7 +61,7 @@ $lang['domainsManagement']['main_header'] ="Domains Management";
 $lang['domainsManagement']['button'] ="Domains Management";
 $lang['domainsManagement']['id'] ="N.";
 $lang['domainsManagement']['domain'] ="Domain";
-$lang['domainsManagement']['actions'] ="Action";
+$lang['domainsManagement']['actions'] ="Actions";
 $lang['domainsManagement']['empty'] ="No domains available";
 $lang['domainsManagement']['add'] ="Add";
 $lang['domainsManagement']['modal']['header'] ="Add Domain";

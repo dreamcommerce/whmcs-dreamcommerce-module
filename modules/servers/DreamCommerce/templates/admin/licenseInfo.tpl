@@ -23,7 +23,7 @@
  * @author Paweł Kopeć <pawelk@modulesgarden.com>
  *}
  <table width="600" class="table">
-          <tr><td>{$lang.index.host}:</td><td>{$info->host}</td></tr>
+          <tr><td>{$lang.index.host}:</td><td> <a href="http://{$info->host}" target="blank">{$info->host}</a></td></tr>
           <tr><td>{$lang.index.customer_name}:</td><td>{$info->customer_name}</td></tr>
           <tr><td>{$lang.index.email}:</td><td> {if !$info->email} - {else} {$info->email} {/if}</td></tr>
           <tr><td>{$lang.index.date_start}:</td><td>{$info->date_start}</td></tr>

@@ -31,7 +31,7 @@
           </thead>
           {foreach from=$licenseDomains key="key" item="domain"}
                 <tr>
-                      <td>{$domain}</td>
+                      <td><a href="http://{$domain}" target="blank">{$domain}</a> </td>
                       <td style="text-align: center;"> <a class="so_delete" data-domain="{$domain}" style="color:#cc0000" href="{$servicePageUrl}&act=domainsManagement&delete={$domain}"><strong>{$lang.general.delete}</strong></a></td>
                 </tr>
           {/foreach}

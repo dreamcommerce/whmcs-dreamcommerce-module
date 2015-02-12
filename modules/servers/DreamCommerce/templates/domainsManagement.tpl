@@ -46,26 +46,20 @@
                 <tr style="background-color:#E6E6E6">
 
                       <th>{$lang.domainsManagement.domain}</th>
-                      <th width="100" style="text-align: center;">{$lang.domainsManagement.actions}</th>
+                      <th width="120" style="text-align: center;">{$lang.domainsManagement.actions}</th>
                 </tr>
           </thead>
           {foreach from=$licenseDomains key="key" item="domain"}
                 <tr>
                       <td>
-                            
-                            {assign var="match" value=""}
-                            {foreach from=$domains item=domain2}
-                                  {if $domain2.id && $domain eq $domain2.name}
-                                   {assign var="match" value=$domain2}
-                                   {/if}
-                            {/foreach} 
-                            {if  $match}
-                                  <a href="clientarea.php?action=domaindetails&id={$match.id}">{$domain}</a>
-                                  {else}
-                                        {$domain}
-                            {/if}
+                            <a href="http://{$domain.name}" target="blank">{$domain.name}</a>
                       </td>
-                      <td style="text-align: center;"> <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain}">{$lang.general.delete}</a></td>
+                      <td style="text-align: right;"> 
+                            {if  $domain.id}
+                                  <a class="btn btn-small btn-warning" href="clientarea.php?action=domaindetails&id={$domain.id}">{$lang.general.manage}</a>
+                            {/if}
+                            <a class="btn btn-small btn-danger so_delete" data-domain="{$domain}"  href="{$servicePageUrl}&act=domainsManagement&delete={$domain.name}">{$lang.general.delete}</a>
+                      </td>
                 </tr>
           {foreachelse}
                 <tr><td colspan="2">{$lang.domainsManagement.empty}</td></tr>
