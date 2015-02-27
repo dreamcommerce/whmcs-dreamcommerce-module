@@ -40,7 +40,7 @@ class DreamCommerce extends MG_Clientarea {
        */
       public function init($params) {
              $this->lang   = $this->getLang($params);
-             $config       = DreamCommerce_ConfigOptions(false);
+             $config       = DreamCommerce_ConfigOptions(array(1));
              $this->config = new DreamCommerce_Config($config, $params);
              $this->api    = new DreamCommerce_API($this->config->host, $this->config->username, $this->config->password, $this->config->debugMode);
              $this->accountID = $params['customfields']['accountID'];

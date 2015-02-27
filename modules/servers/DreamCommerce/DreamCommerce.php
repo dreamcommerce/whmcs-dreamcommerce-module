@@ -32,7 +32,7 @@ include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
  * 
  * @return array
  */
-function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
+function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
  
         $config                 =   array 
         (
@@ -114,10 +114,10 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = true) {
         ),
     );
             
-    if(basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php' && $loadValuesFromServer ===true){
+    if(empty($loadValuesFromServer) && basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php'   ){
             
             $params = mysql_get_row("SELECT * FROM tblproducts WHERE id =? LIMIT 1", array($_REQUEST['id']));
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             if(!empty($dcConfig->host) && !empty($dcConfig->username) && !empty($dcConfig->password)){
                   try{
@@ -160,7 +160,7 @@ function DreamCommerce_CreateAccount($params) {
       if ($params['customfields']['accountID'])
 		return 'Custom Field /Account/ is not empty';
       try{
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -220,7 +220,7 @@ function DreamCommerce_ChangePackage($params) {
       if (!$params['customfields']['accountID'])
 		return 'Custom Field /Account/ is empty';
       try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -249,7 +249,7 @@ function DreamCommerce_TerminateAccount($params) {
       if (!$params['customfields']['accountID'])
 		return 'Custom Field /Account/ is empty';
       try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -277,7 +277,7 @@ function DreamCommerce_SuspendAccount($params) {
       if (!$params['customfields']['accountID'])
 		return 'Custom Field /Account/ is empty';
       try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -306,7 +306,7 @@ function DreamCommerce_UnsuspendAccount($params) {
       if (!$params['customfields']['accountID'])
 		return 'Custom Field /Account/ is empty';
       try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -333,7 +333,7 @@ function DreamCommerce_Renew($params) {
      if (!$params['customfields']['accountID'])
 		return 'Custom Field /Account/ is empty';
      try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -372,7 +372,7 @@ function DreamCommerce_AdminServicesTabFields($params) {
       if (!$params['customfields']['accountID'])
 		return;
       try {
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
@@ -443,7 +443,7 @@ function DreamCommerce_ClientAreaCustomButtonArray($params ) {
       try {
             $clientArea = new DreamCommerce($params['serviceid']);
             $lang = $clientArea->getLang($params);
-            $config = DreamCommerce_ConfigOptions(false);
+            $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             if($dcConfig->domainsManagement)
             return array(
