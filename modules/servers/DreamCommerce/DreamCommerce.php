@@ -76,7 +76,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
            "FriendlyName" => "Store Host Prefix",
             'Type'          =>  'text',
             'Size'          =>  '25',
-           'Description'   =>  'Used when domain is not ordered. Eg. store',
+           'Description'   =>  'Used when domain is not ordered. Eg. "store" or {$order_number}',
             "Default" => "store",  
         ),
             'nextStoreID'          =>  array
@@ -160,6 +160,7 @@ function DreamCommerce_CreateAccount($params) {
       if ($params['customfields']['accountID'])
 		return 'Custom Field /Account/ is not empty';
       try{
+            
             $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
@@ -172,8 +173,15 @@ function DreamCommerce_CreateAccount($params) {
             $api->login();
             
             $email = $params['clientsdetails']['email'];
-            $dcConfig->nextStoreID = (int) $dcConfig->nextStoreID;
-            $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID;
+            $dcConfig->nextStoreID = empty($dcConfig->nextStoreID )? null: (int) $dcConfig->nextStoreID;      
+            if(trim($dcConfig->hostPrefix)=='{$order_number}'){
+                  $order = mysql_get_row("select * from `tblorders` where id =?", array($hosting->hosting_details['orderid']));
+                  $dcConfig->hostPrefix = str_replace('{$order_number}', $order['ordernum'], $dcConfig->hostPrefix);
+                  $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID;
+            }else{
+                 $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID; 
+            }
+            
             $type  = $dcConfig->licenseType =="Full" ? 1 : 0;
             $version = $dcConfig->shopVersion;
             $package = $dcConfig->package;
@@ -196,7 +204,7 @@ function DreamCommerce_CreateAccount($params) {
             $hosting->setCustomField("accountID", (string)$result->account);
             $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ), "username" =>"admin" ));
             
-            if(empty($params['domain'] )){
+            if(empty($params['domain'] ) && !empty($dcConfig->nextStoreID)){
                   $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
                   $product->update(array($optionKey => $dcConfig->nextStoreID +=1 ));
             }
@@ -258,6 +266,10 @@ function DreamCommerce_TerminateAccount($params) {
             $api->login();
             $api->removeLicense(null, $params['customfields']['accountID']);
             $hosting->setCustomField("accountID", "");
+            $order = mysql_get_row("select * from `tblorders` where id =?", array($hosting->hosting_details['orderid']));
+            if(trim($dcConfig->hostPrefix)=='{$order_number}' &&  strpos($params['domain'], $order['ordernum'])!== false){
+                   $hosting->update(array("domain"=> ""));
+            }
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
             return "ERROR: {$ex->getMessage()} Code: {$ex->getCode()}";
