@@ -56,7 +56,7 @@ abstract class MG_Clientarea {
       /**
        * Init object
        */
-      public function init(){
+      public function init($params){
             
       }
       /**
