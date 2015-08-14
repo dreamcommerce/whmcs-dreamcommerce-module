@@ -29,12 +29,12 @@ include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
 
 /**
  * Config options are the module settings defined on a per product basis.
- * 
+ *
  * @return array
  */
 function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
- 
-        $config                 =   array 
+
+        $config                 =   array
         (
           'lmsPartner'          =>  array
         (
@@ -77,7 +77,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
             'Type'          =>  'text',
             'Size'          =>  '25',
            'Description'   =>  'Used when domain is not ordered. Eg. "store" or {$order_number}',
-            "Default" => "store",  
+            "Default" => "store",
         ),
             'nextStoreID'          =>  array
         (
@@ -85,13 +85,13 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
             'Type'          =>  'text',
             'Size'          =>  '25',
             'Description'   =>  'Used for hostname. Eg. 1',
-            "Default" => "1",  
+            "Default" => "1",
         ),
          'licenseType'        => array(
             "FriendlyName" => "License Type",
             'Type'          =>  'dropdown',
             "Options" => "Trial,Full",
-        ), 
+        ),
             'shopVersion' =>  array
         (
            "FriendlyName" => "Shop Version",
@@ -105,7 +105,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
             'Type'          =>  'yesno',
            'Description'   =>  'Enable "Domains Management" In Client Area'
         ),
-            
+
           "debugMode"   =>  array
         (
             "FriendlyName" => "Debug Mode",
@@ -113,9 +113,9 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
             'Description'   =>  'Logs on "Module Log"'
         ),
     );
-            
+
     if(empty($loadValuesFromServer) && basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php'   ){
-            
+
             $params = mysql_get_row("SELECT * FROM tblproducts WHERE id =? LIMIT 1", array($_REQUEST['id']));
             $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
@@ -124,20 +124,20 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
                         $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
                         $api->testConnection();
                         $api->login();
-                        
+
                         $temp = array();
                         foreach($api->getPackages() as $package){
                             $temp[] = "{$package->name}";
                         }
                         $config['package']['Options'] =implode(",", $temp);
-                        
+
                         $temp = array();
                         foreach($api->getPeriods() as $period){
                             $temp[] = "{$period->id} | {$period->name}";
                         }
                         $config['period']['Options'] = implode(",", $temp);
                         unset($temp);
-                        
+
                   } catch (DreamCommerce_Exception $ex) {
                         echo '<div class="errorbox"><span class="title">'.$ex->getMessage().'</span></div>';
                   } catch (Exception $ex){
@@ -152,7 +152,7 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
 
 /**
  * This function is called when a new product is due to be provisioned.
- * 
+ *
  * @param array $params
  * @return string
  */
@@ -160,28 +160,35 @@ function DreamCommerce_CreateAccount($params) {
       if ($params['customfields']['accountID'])
 		return 'Custom Field /Account/ is not empty';
       try{
-            
+          $additionalData = array(
+              'whmcs_service' => $params['serviceid'],
+          );
+          $configoptions = array_values($params['configoptions']);
+          if (isset($configoptions[0])) {
+              $additionalData['whmcs_promocode'] = $configoptions[0];
+          }
+
             $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
             $product = new DreamCommerce_Product($params['pid']);
             $hosting = new DreamCommerce_Hosting($params['serviceid']);
             if(!isset($params['customfields']['accountID'])){
-                 $product->generateDefaultCustomField(); 
+                 $product->generateDefaultCustomField();
             }
             $api->testConnection();
             $api->login();
-            
+
             $email = $params['clientsdetails']['email'];
-            $dcConfig->nextStoreID = empty($dcConfig->nextStoreID )? null: (int) $dcConfig->nextStoreID;      
+            $dcConfig->nextStoreID = empty($dcConfig->nextStoreID )? null: (int) $dcConfig->nextStoreID;
             if(trim($dcConfig->hostPrefix)=='{$order_number}'){
                   $order = mysql_get_row("select * from `tblorders` where id =?", array($hosting->hosting_details['orderid']));
                   $dcConfig->hostPrefix = str_replace('{$order_number}', $order['ordernum'], $dcConfig->hostPrefix);
                   $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID;
             }else{
-                 $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID; 
+                 $host  = $params['domain'] ? $params['domain'] : $dcConfig->hostPrefix.$dcConfig->nextStoreID;
             }
-            
+
             $type  = $dcConfig->licenseType =="Full" ? 1 : 0;
             $version = $dcConfig->shopVersion;
             $package = $dcConfig->package;
@@ -200,15 +207,15 @@ function DreamCommerce_CreateAccount($params) {
             $period = $period? $period: $defaultPeriod;
             $info = $dcConfig->lmsPartner;
             $api->checkDomainAvailability(null, $host);
-            $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info);
+            $result = $api->createLicense(null, $email, $host, $type, $package, $period,$version, $info, $additionalData);
             $hosting->setCustomField("accountID", (string)$result->account);
             $hosting->update(array("domain"=> (string)$result->host, "password" => encrypt((string)$result->password ), "username" =>"admin" ));
-            
+
             if(empty($params['domain'] ) && !empty($dcConfig->nextStoreID)){
                   $optionKey = $dcConfig->getOptionKey('nextStoreID', $params);
                   $product->update(array($optionKey => $dcConfig->nextStoreID +=1 ));
             }
-            return 'success';         
+            return 'success';
       }
       catch (DreamCommerce_Exception $ex) {
             return "ERROR: {$ex->getMessage()}";
@@ -220,7 +227,7 @@ function DreamCommerce_CreateAccount($params) {
 
 /**
  * This function is used for upgrading and downgrading of products.
- * 
+ *
  * @param array $params
  * @return string
  */
@@ -249,7 +256,7 @@ function DreamCommerce_ChangePackage($params) {
 
 /**
  * This function is called when a termination is requested.
- * 
+ *
  * @param array $params
  * @return string
  */
@@ -276,12 +283,12 @@ function DreamCommerce_TerminateAccount($params) {
       } catch (Exception $ex) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
       }
-     
+
 }
 
 /**
  * This function is called when a suspension is requested.
- * 
+ *
  * @param array $params
  * @return string
  */
@@ -310,7 +317,7 @@ function DreamCommerce_SuspendAccount($params) {
 
 /**
  * This function is called when an unsuspension is requested.
- * 
+ *
  * @param array $params
  * @return string
  */
@@ -365,7 +372,7 @@ function DreamCommerce_Renew($params) {
                   }
             }
             $period = $period? $period: $defaultPeriod;
-            
+
             $api->renewLicense(null, $params['customfields']['accountID'],  $period);
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
@@ -395,7 +402,7 @@ function DreamCommerce_AdminServicesTabFields($params) {
             $api->login();
             if(isset($_REQUEST['DreamCommerce_ajax'])){
                   try{
-                        switch ($_POST['action']){					
+                        switch ($_POST['action']){
 				case 'addDomain':
                                   $api->addLicenseDomain(null,$params['customfields']['accountID'], $_REQUEST['domain']);
 					$res = array(
@@ -426,7 +433,7 @@ function DreamCommerce_AdminServicesTabFields($params) {
             $data = array();
             global $templates_compiledir;
             $servicePageUrl = "clientsservices.php?userid={$_GET['userid']}&id={$_GET['id']}&productid={$params['packageid']}";
-            
+
             $adminTemplateDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'admin';
             $sm = new Smarty();
             $sm->compile_dir = $templates_compiledir;
@@ -439,7 +446,7 @@ function DreamCommerce_AdminServicesTabFields($params) {
             $licenseDomains = $api->getLicenseDomains(null,  $params['customfields']['accountID']);
             $sm->assign("licenseDomains",   $licenseDomains);
             $data['Domains Management'] = $sm->fetch($adminTemplateDir.DIRECTORY_SEPARATOR.'domainsManagement.tpl');
-            
+
             return $data;
       } catch (DreamCommerce_Exception $ex) {
             echo '<div class="errorbox"><strong>ERROR</strong><br/>' .$ex->getMessage().' Code: '.$ex->getCode(). '</div>';
@@ -460,7 +467,7 @@ function DreamCommerce_ClientAreaCustomButtonArray($params ) {
             if($dcConfig->domainsManagement)
             return array(
                           $lang['domainsManagement']['button'] => "management",
-                   );  
+                   );
       } catch (Exception $ex) {
              return array(
                     "Management" => "management",
@@ -471,7 +478,7 @@ function DreamCommerce_ClientAreaCustomButtonArray($params ) {
 
 /**
  * This function is used on Client Area
- * 
+ *
  * @param array $params
  * @return array
  */
@@ -492,7 +499,7 @@ function DreamCommerce_ClientArea($params) {
 
 /**
  * Management this function is used on Client Area
- * 
+ *
  * @param array $params
  * @return array
  */

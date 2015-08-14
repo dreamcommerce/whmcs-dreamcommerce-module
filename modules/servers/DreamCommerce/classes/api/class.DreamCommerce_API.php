@@ -120,10 +120,10 @@ class DreamCommerce_API  extends MG_CurlApi{
             
             return $this->processRequest($this->call($data));
       }
-      
+
        /**
        * Create license
-       * 
+       *
        * @param string $session session identifier
        * @param string $email user email address
        * @param string $host shop address, e.g. "store001.partnerdomain.com"
@@ -132,11 +132,12 @@ class DreamCommerce_API  extends MG_CurlApi{
        * @param int $period period (months)
        * @param string $version shop version, if empty latest version will be used
        * @param string $info additional notes
+       * @param array $additionalData additional params
        * @return object|null
        */
-      public function createLicense($session=null, $email, $host, $type, $package, $period,$version=null, $info=null){
+      public function createLicense($session=null, $email, $host, $type, $package, $period,$version=null, $info=null, $additionalData = array()){
             if(!$session) $session= $this->session;
-            $data = array( 
+            $data = array(
                            "email" => $email
                           ,"host"  => $host
                           ,"type"  => $type
@@ -147,12 +148,16 @@ class DreamCommerce_API  extends MG_CurlApi{
                   $data['version'] = $version;
             if($info)
                   $data['info'] = $info;
-            
-            $data = array( 
+
+          if ($additionalData) {
+              $data = array_merge($data, $additionalData);
+          }
+
+            $data = array(
                          "method"  => "createLicense"
                          ,'params' => array($session, $data)
                 );
-            
+
             return $this->processRequest($this->call($data ));
       }
       /**
