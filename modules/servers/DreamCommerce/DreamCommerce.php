@@ -168,6 +168,10 @@ function DreamCommerce_CreateAccount($params) {
               $additionalData['whmcs_promocode'] = $configoptions[0];
           }
 
+          if (isset($params['clientsdetails']['phonenumber'])) {
+              $additionalData['phone'] = $params['clientsdetails']['phonenumber'];
+          }
+
             $config = DreamCommerce_ConfigOptions(array(1));
             $dcConfig = new DreamCommerce_Config($config, $params);
             $api = new DreamCommerce_API($dcConfig->host, $dcConfig->username, $dcConfig->password, $dcConfig->debugMode);
