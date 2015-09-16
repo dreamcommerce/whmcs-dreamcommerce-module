@@ -32,8 +32,8 @@ include_once dirname(__FILE__) .DIRECTORY_SEPARATOR.'DreamCommerce_Loader.php';
  *
  * @return array
  */
-function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
-
+function DreamCommerce_ConfigOptions($prameters = array()) {
+  
         $config                 =   array
         (
           'lmsPartner'          =>  array
@@ -112,9 +112,9 @@ function DreamCommerce_ConfigOptions($loadValuesFromServer = array()) {
             'Type'          =>  'yesno',
             'Description'   =>  'Logs on "Module Log"'
         ),
-    );
+    ); 
 
-    if(empty($loadValuesFromServer) && basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php'   ){
+    if((empty($prameters) || $prameters['action'] =='ConfigOptions')&& basename($_SERVER["SCRIPT_NAME"]) == 'configproducts.php'   ){
 
             $params = mysql_get_row("SELECT * FROM tblproducts WHERE id =? LIMIT 1", array($_REQUEST['id']));
             $config = DreamCommerce_ConfigOptions(array(1));
