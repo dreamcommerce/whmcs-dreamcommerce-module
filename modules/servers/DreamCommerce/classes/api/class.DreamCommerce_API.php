@@ -176,6 +176,15 @@ class DreamCommerce_API  extends MG_CurlApi{
             return $this->processRequest($this->call($data ));
       }
       
+      function editLicense($session=null, $licenseID){
+            if(!$session) $session= $this->session;
+            $data = array( 
+                         "method"  => "editLicense"
+                         ,'params' => array($session, $licenseID, array("type" =>1))
+                );
+            return $this->processRequest($this->call($data ));
+      }
+      
       /**
        * Remove license
        * 

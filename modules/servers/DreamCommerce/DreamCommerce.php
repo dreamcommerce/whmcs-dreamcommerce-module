@@ -249,7 +249,15 @@ function DreamCommerce_ChangePackage($params) {
             }
             $api->testConnection();
             $api->login();
-            $api->changeLicensePackage(null, $params['customfields']['accountID'], $dcConfig->package);
+            $info = $api->getLicense(null,$params['customfields']['accountID']);
+                     
+            if($info->package_name != $dcConfig->package ){
+                $api->changeLicensePackage(null, $params['customfields']['accountID'], $dcConfig->package);
+            }
+
+            if($info->type !== 1 &&  $dcConfig->licenseType=="Full"){
+                $api->editLicense(null, $params['customfields']['accountID']);
+            }
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
             return "ERROR: {$ex->getMessage()} Code: {$ex->getCode()}";
