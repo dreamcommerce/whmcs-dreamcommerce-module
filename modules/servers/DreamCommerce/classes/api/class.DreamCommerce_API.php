@@ -31,10 +31,10 @@ class DreamCommerce_API  extends MG_CurlApi{
       private $session;
       /**
        * Init object
-       * @param sting $url
-       * @param sting $login
-       * @param sting $password
-       * @param sting $debug
+       * @param string $url
+       * @param string $login
+       * @param string $password
+       * @param string $debug
        */
       public function __construct($url, $login, $password, $debug) {
            $this->isJson = true;
@@ -398,4 +398,16 @@ class DreamCommerce_API  extends MG_CurlApi{
                 );
             return $this->processRequest($this->call($data ));
       }
+
+    public function installLicenseSkin($session = null, $licenseID, $skinID)
+    {
+        if (!$session) {
+            $session = $this->session;
+        }
+        $data = array(
+            'method' => 'installLicenseSkin',
+            'params' => array($session, $licenseID, $skinID),
+        );
+        return $this->processRequest($this->call($data));
+    }
 }
