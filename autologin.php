@@ -9,7 +9,7 @@ $config = $config['whmcs'];
 date_default_timezone_set($config['timezone']);
 
 # Define WHMCS URL & AutoAuth Key
-$whmcsurl = "/dologin.php";
+$whmcsurl = 'dologin.php';
 $autoauthkey = $config['auto_auth_key']; #AutoAuth Key, ATTENTION: should be defined in configuration.php aswell!
 $secret_key = $config['secret_key']; #Should be same as you defined in email template
 $id = (int) $_GET['id'];
