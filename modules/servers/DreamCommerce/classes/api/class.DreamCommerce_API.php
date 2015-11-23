@@ -233,6 +233,25 @@ class DreamCommerce_API  extends MG_CurlApi{
                 );
             return $this->processRequest($this->call($data ));
       }
+
+    /**
+     * Upgrade license
+     *
+     * @param string $session
+     * @param string $licenseID
+     * @return object|null
+     */
+    function upgradeLicense($session = null, $licenseID)
+    {
+        if (!$session) {
+            $session= $this->session;
+        }
+        $data = array(
+            'method'  => 'upgradeLicense',
+            'params' => array($session, $licenseID),
+        );
+        return $this->processRequest($this->call($data ));
+    }
       
        /**
        * Set new package for license

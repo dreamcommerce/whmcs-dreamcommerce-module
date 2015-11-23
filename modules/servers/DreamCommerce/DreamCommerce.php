@@ -256,7 +256,7 @@ function DreamCommerce_ChangePackage($params) {
             }
 
             if($info->type !== 1 &&  $dcConfig->licenseType=="Full"){
-                $api->editLicense(null, $params['customfields']['accountID']);
+                $api->upgradeLicense(null, $params['customfields']['accountID']);
             }
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
