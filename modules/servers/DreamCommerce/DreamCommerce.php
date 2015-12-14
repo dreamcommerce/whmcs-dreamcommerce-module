@@ -161,6 +161,7 @@ function DreamCommerce_CreateAccount($params) {
 		return 'Custom Field /Account/ is not empty';
       try{
           $additionalData = array(
+              'ip_address' => $_SERVER['REMOTE_ADDR'],
               'whmcs_service' => $params['serviceid'],
           );
           $configoptions = array_values($params['configoptions']);
