@@ -269,7 +269,7 @@ function DreamCommerce_ChangePackage($params) {
 
 /**
  * This function is called when a termination is requested.
- *
+ * 
  * @param array $params
  * @return string
  */
@@ -285,18 +285,13 @@ function DreamCommerce_TerminateAccount($params) {
             $api->testConnection();
             $api->login();
             $api->removeLicense(null, $params['customfields']['accountID']);
-            $hosting->setCustomField("accountID", "");
-            $order = mysql_get_row("select * from `tblorders` where id =?", array($hosting->hosting_details['orderid']));
-            if(trim($dcConfig->hostPrefix)=='{$order_number}' &&  strpos($params['domain'], $order['ordernum'])!== false){
-                   $hosting->update(array("domain"=> ""));
-            }
             return 'success';
       } catch (DreamCommerce_Exception $ex) {
             return "ERROR: {$ex->getMessage()} Code: {$ex->getCode()}";
       } catch (Exception $ex) {
             return "ERROR: {$ex->getMessage()} File: {$ex->getFile()} Line: {$ex->getLine()}";
       }
-
+     
 }
 
 /**
